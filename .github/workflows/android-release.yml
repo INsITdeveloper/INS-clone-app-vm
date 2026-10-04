@@ -1,0 +1,78 @@
+name: Build & Release APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses > /dev/null || true
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Generate signing keystore
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD || 'insclone123' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'insclone123' }}
+        run: |
+          keytool -genkeypair -v \
+            -keystore "$GITHUB_WORKSPACE/my-upload-key.jks" \
+            -alias upload \
+            -keyalg RSA -keysize 2048 -validity 10950 \
+            -storepass "$STORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+            -dname "CN=INS Clone, O=INS Virtual Space, C=ID"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build release APK
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD || 'insclone123' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'insclone123' }}
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: |
+          mkdir -p release-assets
+          cp app/build/outputs/apk/release/*.apk "release-assets/INS-Virtual-Space-v1.0.${{ github.run_number }}.apk"
+          ls -lh release-assets
+
+      - name: Upload APK as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: INS-Virtual-Space-APK
+          path: release-assets/*.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: INS Virtual Space v1.0.${{ github.run_number }}
+          body: |
+            Build otomatis dari commit ${{ github.sha }}.
+
+            APK ini berisi fitur **Clone App** (re-sign + install) yang benar-benar menjalankan
+            aplikasi klon sebagai aplikasi terpisah. Lihat `CLONE_APP.md` untuk cara pakai & batasan.
+          files: release-assets/*.apk
+          generate_release_notes: true

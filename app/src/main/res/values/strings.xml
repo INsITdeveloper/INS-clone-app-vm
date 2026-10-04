@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">INS Virtual Space</string>
+    <string name="header_clone_app">Clone App</string>
+    <string name="virtual_engine_package">com.ins.virtualspace</string>
+    <string name="tab_home">Clone Space</string>
+    <string name="tab_ins_manager">INS Manager</string>
+    <string name="tab_identity_guard">Identity Spoof</string>
+    <string name="tab_architecture">Engine Core</string>
+    <string name="fab_add_clone">Tambah Aplikasi Klon</string>
+    <string name="action_clean_memory">Bersihkan Memori Virtual</string>
+    <string name="action_search">Cari aplikasi klon</string>
+    <string name="action_profile">Profil Ruang Virtual</string>
+    <string name="folder_tools">Alat</string>
+    <string name="recents_clone_suffix">(Clone App)</string>
+</resources>

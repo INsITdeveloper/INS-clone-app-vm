@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Normal & Virtual Space Discovery Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Izin memasang APK clone (re-sign) lewat PackageInstaller -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!-- Package visibility for discovering installed apps to clone into Dual Space -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+    <!-- Location permissions for isolated Mock Location / GPS comparison -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyApplication">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Virtual Container Stub Activity:
+            Uses documentLaunchMode="intoExisting" + custom taskAffinity so each cloned app instance
+            runs as an independent Recents card formatted as "[NamaAplikasi](Clone App)"
+            via ActivityManager.TaskDescription.
+        -->
+        <activity
+            android:name=".VirtualContainerActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:documentLaunchMode="intoExisting"
+            android:exported="false"
+            android:label="@string/header_clone_app"
+            android:launchMode="standard"
+            android:maxRecents="16"
+            android:multiprocess="true"
+            android:taskAffinity="com.ins.virtualspace.virtual.task"
+            android:theme="@style/Theme.MyApplication" />
+
+        <service
+            android:name=".virtual.VirtualProcessService"
+            android:enabled="true"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

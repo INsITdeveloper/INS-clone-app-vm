@@ -1,0 +1,6 @@
+{
+  "name": "INS Virtual Space",
+  "description": "Virtual Container Engine & Dual Space manager with per-clone identity isolation, sandboxed storage, SQLite viewer, and SharedPreferences XML editor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
